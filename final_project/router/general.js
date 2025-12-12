@@ -166,20 +166,49 @@ public_users.get('/author/:author',function (req, res) {
 
 
 
+//// Get all books based on title
+//public_users.get('/title/:title',function (req, res) {
+//  //Write your code here
+//  //return res.status(300).json({message: "Yet to be implemented"});
+//
+//  const title = req.params.title;
+//  let titlefnd = false;
+//
+//  for (let id in books) {
+//    if (books[id].title === title) {
+//        titlefnd = true;
+//        res.send(books[id]); 
+//    }
+//  };
+//  if (!titlefnd) {
+//    return res.status(404).json({ message: "Title not found" });
+//  }
+//
+//
+//});
+
+
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  //return res.status(300).json({message: "Yet to be implemented"});
-
+  
   const title = req.params.title;
-
-  for (let id in books) {
-    if (books[id].title === title) {
-        res.send(books[id]); 
-    }
-  };
-
-
+  let titlefnd = false;
+  //Creating a promise method. 
+  let myPromise = new Promise((resolve,reject) => {
+    for (let id in books) {
+      if (books[id].title === title) {
+        titlefnd = true;
+        res.send(JSON.stringify(books[id],null,4));
+      }
+    };        
+  })
+  //Call the promise and wait for it to be resolved and then print a message.
+  myPromise.then((successMessage) => {
+    console.log("From Callback " + successMessage)
+  });
+  if (!titlefnd) {
+    return res.status(404).json({ message: "Title not found" });
+  }
 });
 
 //  Get book review

@@ -68,11 +68,48 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   if (!books[isbn]) {
     return res.status(404).json({ message: "Book not found" });
   };
+
   
   books[isbn].reviews[user] = { "review": review };
 
-  res.send(books[isbn]);
+  //res.send(books[isbn]);
+  return res.status(200).json({
+    message: "Review added/updated successfully",
+    book: books[isbn]
+  });
 
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+
+  const user = req.session.authorization.username;
+  const isbn = req.params.isbn;
+  
+  // Validar que el libro existe
+  if (!books[isbn]) {
+    return res.status(404).json({ message: "Book not found" });
+  }
+
+  // Validar que existan reviews
+  if (!books[isbn].reviews) {
+    return res.status(404).json({ message: "No reviews found for this book." });
+  }
+
+  // Validar que el usuario tenga una review
+  if (!books[isbn].reviews[user]) {
+    return res.status(404).json({ message: "You have no review for this book." });
+  }
+
+  // Eliminar la review del usuario
+  delete books[isbn].reviews[user];
+
+  return res.status(200).json({
+    message: "Review deleted",
+    book: books[isbn]
+  });
+
+  //res.send(books[isbn]);
+  
 });
 
 module.exports.authenticated = regd_users;
